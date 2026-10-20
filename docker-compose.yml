@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  message-broker:
+    image: rabbitmq:3.13-management-alpine
+    container_name: erp-sync-broker
+    ports:
+      - "5672:5672"
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: crucenne_admin
+      RABBITMQ_DEFAULT_PASS: broker_dev_pass
+
+  sync-worker:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./:/app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - BROKER_URL=amqp://crucenne_admin:broker_dev_pass@message-broker:5672
+      - TARGET_DB_URL=postgres://crucenne_admin:db_dev_pass@target-store:5432/cloud_ledger
+    command: sh -c "echo 'ERP Normalizer Worker running' && tail -f /dev/null"
+    depends_on:
+      - message-broker
+      - target-store
+
+  target-store:
+    image: postgres:16-alpine
+    container_name: erp-cloud-target
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: crucenne_admin
+      POSTGRES_PASSWORD: db_dev_pass
+      POSTGRES_DB: cloud_ledger

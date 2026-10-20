@@ -1,0 +1,55 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "LegacyERPJournalEntryPayload",
+    "type": "object",
+    "properties": {
+        "VCR_NUM": {
+            "type": "string",
+            "description": "Legacy voucher / transaction number (e.g., Sage X3 / SAP DocNum)"
+        },
+        "ENTRY_DATE": {
+            "type": "string",
+            "format": "date"
+        },
+        "CURRENCY": {
+            "type": "string",
+            "enum": [
+                "USD",
+                "EUR",
+                "INR",
+                "GBP"
+            ]
+        },
+        "LINES": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "ACC_NUM": {
+                        "type": "string"
+                    },
+                    "DEBIT_AMT": {
+                        "type": "number"
+                    },
+                    "CREDIT_AMT": {
+                        "type": "number"
+                    },
+                    "COST_CENTER": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "ACC_NUM",
+                    "DEBIT_AMT",
+                    "CREDIT_AMT"
+                ]
+            }
+        }
+    },
+    "required": [
+        "VCR_NUM",
+        "ENTRY_DATE",
+        "CURRENCY",
+        "LINES"
+    ]
+}
